@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Language Translator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #202124;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: white;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
+            padding: 12px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 500;
+            color: #5f6368;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            color: #4285f4;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+        }
+
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .app-title {
+            font-size: 32px;
+            margin-bottom: 24px;
+            color: #202124;
+            text-align: center;
+        }
+
+        .translate-container {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            overflow: hidden;
+        }
+
+        .language-selector {
+            display: flex;
+            border-bottom: 1px solid #dadce0;
+        }
+
+        .language-box {
+            flex: 1;
+            padding: 12px 16px;
+            position: relative;
+        }
+
+        .language-box.active {
+            background-color: #f8f9fa;
+        }
+
+        .language-label {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 8px;
+        }
+
+        .language-select {
+            width: 100%;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            background-color: transparent;
+            appearance: none;
+            padding-right: 24px;
+            cursor: pointer;
+        }
+
+        .language-select:focus {
+            outline: none;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 16px;
+            top: 40px;
+            color: #5f6368;
+            pointer-events: none;
+        }
+
+        .swap-btn {
+            background-color: white;
+            border: 1px solid #dadce0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 auto;
+            transform: translateY(-50%);
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .swap-btn:hover {
+            background-color: #f1f3f4;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+        }
+
+        .swap-btn:active {
+            background-color: #e8f0fe;
+        }
+
+        .text-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+        }
+
+        @media (min-width: 768px) {
+            .text-container {
+                flex-direction: row;
+            }
+        }
+
+        .text-box {
+            flex: 1;
+            padding: 16px;
+            position: relative;
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 200px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 8px;
+            font-family: 'Google Sans', Arial, sans-serif;
+        }
+
+        .text-area:focus {
+            outline: none;
+        }
+
+        .text-area::placeholder {
+            color: #9aa0a6;
+        }
+
+        .text-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background-color: #f1f3f4;
+        }
+
+        .action-btn:active {
+            background-color: #e8f0fe;
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #9aa0a6;
+            align-self: center;
+        }
+
+        .translate-btn-container {
+            padding: 16px;
+            border-top: 1px solid #dadce0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .translate-btn {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .translate-btn:hover {
+            background-color: #3367d6;
+            box-shadow: 0 1px 2px 0 rgba(66,133,244,0.3), 0 1px 3px 1px rgba(66,133,244,0.15);
+        }
+
+        .translate-btn:active {
+            background-color: #2b56c0;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 24px;
+            margin-top: 40px;
+            border-top: 1px solid #dadce0;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .footer-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            text-align: center;
+            color: #9aa0a6;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .app-title {
+                font-size: 24px;
+            }
+
+            .language-selector {
+                flex-direction: column;
+            }
+
+            .swap-btn {
+                transform: rotate(90deg) translateX(-50%);
+                margin: -20px auto;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* RTL support for Arabic, Hebrew, etc. */
+        [dir="rtl"] .text-area {
+            direction: rtl;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo">
+                <i class="fas fa-language logo-icon"></i>
+                <span>Translate</span>
+            </a>
+            <div class="nav-links">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Saved</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <h1 class="app-title">Multi-Language Translator</h1>
+        
+        <div class="translate-container">
+            <div class="language-selector">
+                <div class="language-box active">
+                    <div class="language-label">Original text</div>
+                    <select class="language-select" id="source-language">
+                        <option value="auto">Detect language</option>
+                        <option value="en" selected>English</option>
+                        <option value="hi">Hindi (हिन्दी)</option>
+                        <option value="ne">Nepali (नेपाली)</option>
+                        <option value="es">Spanish (Español)</option>
+                        <option value="fr">French (Français)</option>
+                        <option value="de">German (Deutsch)</option>
+                        <option value="it">Italian (Italiano)</option>
+                        <option value="pt">Portuguese (Português)</option>
+                        <option value="ru">Russian (Русский)</option>
+                        <option value="zh">Chinese (中文)</option>
+                        <option value="ja">Japanese (日本語)</option>
+                        <option value="ko">Korean (한국어)</option>
+                        <option value="ar">Arabic (العربية)</option>
+                        <option value="bn">Bengali (বাংলা)</option>
+                        <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                        <option value="ta">Tamil (தமிழ்)</option>
+                        <option value="te">Telugu (తెలుగు)</option>
+                        <option value="mr">Marathi (मराठी)</option>
+                        <option value="gu">Gujarati (ગુજરાતી)</option>
+                        <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                        <option value="ml">Malayalam (മലയാളം)</option>
+                        <option value="th">Thai (ไทย)</option>
+                        <option value="vi">Vietnamese (Tiếng Việt)</option>
+                        <option value="tr">Turkish (Türkçe)</option>
+                        <option value="fa">Persian (فارسی)</option>
+                        <option value="ur">Urdu (اردو)</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
+                <div class="language-box">
+                    <div class="language-label">Translation</div>
+                    <select class="language-select" id="target-language">
+                        <option value="en">English</option>
+                        <option value="hi" selected>Hindi (हिन्दी)</option>
+                        <option value="ne">Nepali (नेपाली)</option>
+                        <option value="es">Spanish (Español)</option>
+                        <option value="fr">French (Français)</option>
+                        <option value="de">German (Deutsch)</option>
+                        <option value="it">Italian (Italiano)</option>
+                        <option value="pt">Portuguese (Português)</option>
+                        <option value="ru">Russian (Русский)</option>
+                        <option value="zh">Chinese (中文)</option>
+                        <option value="ja">Japanese (日本語)</option>
+                        <option value="ko">Korean (한국어)</option>
+                        <option value="ar">Arabic (العربية)</option>
+                        <option value="bn">Bengali (বাংলা)</option>
+                        <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                        <option value="ta">Tamil (தமிழ்)</option>
+                        <option value="te">Telugu (తెలుగు)</option>
+                        <option value="mr">Marathi (मराठी)</option>
+                        <option value="gu">Gujarati (ગુજરાતી)</option>
+                        <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                        <option value="ml">Malayalam (മലയാളം)</option>
+                        <option value="th">Thai (ไทย)</option>
+                        <option value="vi">Vietnamese (Tiếng Việt)</option>
+                        <option value="tr">Turkish (Türkçe)</option>
+                        <option value="fa">Persian (فارسی)</option>
+                        <option value="ur">Urdu (اردو)</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
+            </div>
+            
+            <button class="swap-btn" id="swap-languages">
+                <i class="fas fa-exchange-alt"></i>
+            </button>
+            
+            <div class="text-container">
+                <div class="text-box">
+                    <textarea class="text-area" id="source-text" placeholder="Enter text"></textarea>
+                    <div class="text-actions">
+                        <div>
+                            <button class="action-btn" id="clear-source">
+                                <i class="fas fa-times"></i>
+                                <span>Clear</span>
+                            </button>
+                            <button class="action-btn" id="listen-source">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Listen</span>
+                            </button>
+                        </div>
+                        <span class="char-count" id="source-count">0/5000</span>
+                    </div>
+                </div>
+                <div class="text-box">
+                    <textarea class="text-area" id="target-text" placeholder="Translation" readonly></textarea>
+                    <div class="text-actions">
+                        <div>
+                            <button class="action-btn" id="copy-target">
+                                <i class="fas fa-copy"></i>
+                                <span>Copy</span>
+                            </button>
+                            <button class="action-btn" id="listen-target">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Listen</span>
+                            </button>
+                        </div>
+                        <span class="char-count" id="target-count">0/5000</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="translate-btn-container">
+                <button class="translate-btn" id="translate-btn">
+                    <i class="fas fa-language pulse"></i>
+                    <span>Translate</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Privacy & Terms</a>
+                <a href="#" class="footer-link">Help</a>
+                <a href="#" class="footer-link">Send Feedback</a>
+            </div>
+            <p class="copyright">© <span id="year"></span> Multi-Language Translator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const sourceLanguage = document.getElementById('source-language');
+        const targetLanguage = document.getElementById('target-language');
+        const sourceText = document.getElementById('source-text');
+        const targetText = document.getElementById('target-text');
+        const swapBtn = document.getElementById('swap-languages');
+        const translateBtn = document.getElementById('translate-btn');
+        const clearSourceBtn = document.getElementById('clear-source');
+        const listenSourceBtn = document.getElementById('listen-source');
+        const copyTargetBtn = document.getElementById('copy-target');
+        const listenTargetBtn = document.getElementById('listen-target');
+        const sourceCount = document.getElementById('source-count');
+        const targetCount = document.getElementById('target-count');
+
+        // RTL languages
+        const rtlLanguages = ['ar', 'fa', 'ur', 'he'];
+
+        // Character Counter
+        sourceText.addEventListener('input', () => {
+            const count = sourceText.value.length;
+            sourceCount.textContent = `${count}/5000`;
+            
+            if (count > 5000) {
+                sourceCount.style.color = '#d93025';
+            } else {
+                sourceCount.style.color = '#9aa0a6';
+            }
+        });
+
+        // Set RTL direction for appropriate languages
+        function setTextDirection() {
+            const sourceLang = sourceLanguage.value;
+            const targetLang = targetLanguage.value;
+            
+            sourceText.dir = rtlLanguages.includes(sourceLang) ? 'rtl' : 'ltr';
+            targetText.dir = rtlLanguages.includes(targetLang) ? 'rtl' : 'ltr';
+        }
+
+        sourceLanguage.addEventListener('change', setTextDirection);
+        targetLanguage.addEventListener('change', setTextDirection);
+
+        // Swap Languages
+        swapBtn.addEventListener('click', () => {
+            const tempLang = sourceLanguage.value;
+            sourceLanguage.value = targetLanguage.value;
+            targetLanguage.value = tempLang;
+            
+            const tempText = sourceText.value;
+            sourceText.value = targetText.value;
+            targetText.value = tempText;
+            
+            // Update character count
+            const count = sourceText.value.length;
+            sourceCount.textContent = `${count}/5000`;
+            
+            // Update text direction
+            setTextDirection();
+        });
+
+        // Clear Source Text
+        clearSourceBtn.addEventListener('click', () => {
+            sourceText.value = '';
+            sourceCount.textContent = '0/5000';
+        });
+
+        // Copy Target Text
+        copyTargetBtn.addEventListener('click', () => {
+            targetText.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const originalText = copyTargetBtn.innerHTML;
+            copyTargetBtn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
+            setTimeout(() => {
+                copyTargetBtn.innerHTML = originalText;
+            }, 2000);
+        });
+
+        // Listen Buttons (mock functionality)
+        listenSourceBtn.addEventListener('click', () => {
+            if (!sourceText.value.trim()) {
+                alert('No text to read');
+                return;
+            }
+            alert(`In a real app, this would read: "${sourceText.value}"`);
+        });
+
+        listenTargetBtn.addEventListener('click', () => {
+            if (!targetText.value.trim()) {
+                alert('No translation to read');
+                return;
+            }
+            alert(`In a real app, this would read: "${targetText.value}"`);
+        });
+
+        // Translation dictionary
+        const mockTranslations = {
+            // English to others
+            'en-hi': 'नमस्ते, यह एक उदाहरण अनुवाद है।',
+            'en-ne': 'नमस्ते, यो एक उदाहरण अनुवाद हो।',
+            'en-es': 'Hola, esto es una traducción de ejemplo.',
+            'en-fr': 'Bonjour, ceci est un exemple de traduction.',
+            'en-de': 'Hallo, dies ist eine Beispielübersetzung.',
+            'en-it': 'Ciao, questa è una traduzione di esempio.',
+            'en-pt': 'Olá, esta é uma tradução de exemplo.',
+            'en-ru': 'Привет, это пример перевода.',
+            'en-zh': '你好，这是一个示例翻译。',
+            'en-ja': 'こんにちは、これは翻訳の例です。',
+            'en-ko': '안녕하세요, 이것은 번역 예제입니다.',
+            'en-ar': 'مرحبًا ، هذا مثال على الترجمة.',
+            'en-bn': 'হ্যালো, এটি একটি উদাহরণ অনুবাদ।',
+            'en-pa': 'ਹੈਲੋ, ਇਹ ਇੱਕ ਉਦਾਹਰਣ ਅਨੁਵਾਦ ਹੈ।',
+            'en-ta': 'வணக்கம், இது ஒரு மாதிரி மொழிபெயர்ப்பு.',
+            'en-te': 'హలో, ఇది ఒక ఉదాహరణ అనువాదం.',
+            'en-mr': 'नमस्कार, हे एक उदाहरण भाषांतर आहे.',
+            'en-gu': 'હેલો, આ એક ઉદાહરણ અનુવાદ છે.',
+            'en-kn': 'ನಮಸ್ಕಾರ, ಇದು ಒಂದು ಉದಾಹರಣೆ ಅನುವಾದ.',
+            'en-ml': 'ഹലോ, ഇതൊരു ഉദാഹരണം വിവർത്തനമാണ്.',
+            'en-th': 'สวัสดี นี่คือตัวอย่างการแปล',
+            'en-vi': 'Xin chào, đây là một bản dịch mẫu.',
+            'en-tr': 'Merhaba, bu bir örnek çeviridir.',
+            'en-fa': 'سلام، این یک ترجمه نمونه است.',
+            'en-ur': 'ہیلو، یہ ایک مثال کا ترجمہ ہے۔',
+            
+            // Hindi to others
+            'hi-en': 'Hello, this is a sample translation.',
+            'hi-ne': 'नमस्ते, यो नमुना अनुवाद हो।',
+            'hi-es': 'Hola, esta es una traducción de muestra.',
+            'hi-fr': 'Bonjour, ceci est une traduction d\'exemple.',
+            
+            // Nepali to others
+            'ne-en': 'Hello, this is a sample translation.',
+            'ne-hi': 'नमस्ते, यह एक नमूना अनुवाद है।',
+            'ne-es': 'Hola, esta es una traducción de muestra.',
+            
+            // Add more combinations as needed...
+        };
+
+        // Get translation with fallback
+        function getTranslation(sourceLang, targetLang, text) {
+            const key = `${sourceLang}-${targetLang}`;
+            
+            if (mockTranslations[key]) {
+                return mockTranslations[key];
+            }
+            
+            // If direct translation not available, try via English
+            if (sourceLang !== 'en' && mockTranslations[`en-${targetLang}`]) {
+                return `[Translated via English] ${mockTranslations[`en-${targetLang}`]}`;
+            }
+            
+            return `[Translation from ${document.getElementById('source-language').options[document.getElementById('source-language').selectedIndex].text} to ${document.getElementById('target-language').options[document.getElementById('target-language').selectedIndex].text}] ${text}`;
+        }
+
+        // Translate Button
+        translateBtn.addEventListener('click', () => {
+            const text = sourceText.value.trim();
+            if (!text) {
+                alert('Please enter some text to translate');
+                return;
+            }
+            
+            if (text.length > 5000) {
+                alert('Text exceeds maximum length of 5000 characters');
+                return;
+            }
+            
+            const sourceLang = sourceLanguage.value;
+            const targetLang = targetLanguage.value;
+            
+            const translatedText = getTranslation(sourceLang, targetLang, text);
+            targetText.value = translatedText;
+            targetCount.textContent = `${translatedText.length}/5000`;
+            
+            // Set text direction for target
+            setTextDirection();
+        });
+
+        // Auto-translate when source text changes (with delay)
+        let translateTimeout;
+        sourceText.addEventListener('input', () => {
+            clearTimeout(translateTimeout);
+            
+            if (sourceText.value.trim()) {
+                translateTimeout = setTimeout(() => {
+                    translateBtn.click();
+                }, 1000);
+            } else {
+                targetText.value = '';
+                targetCount.textContent = '0/5000';
+            }
+        });
+
+        // Set current year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Auto-focus source text area
+        sourceText.focus();
+        
+        // Initialize text direction
+        setTextDirection();
+    </script>
+</body>
+</html>
